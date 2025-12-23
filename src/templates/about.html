@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}關於我們 - 智能社交系統{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="card-title text-center mb-4">關於我們</h1>
+                    <h2 class="mt-5">網站介紹</h2>
+                    <p class="lead">{{ site_description }}</p>
+                    <h2 class="mt-5">開發團隊</h2>
+                    <ul class="list-group list-group-flush">
+                        {% for author in authors %}
+                            <li class="list-group-item fs-5">{{ author.name }} / {{ author.class }} / {{ author.student_id }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

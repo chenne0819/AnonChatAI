@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}給予評價 - 智能社交系統{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="card-title text-center mb-2">給予夥伴 #{{ rated_id }} 評價</h1>
+                    <p class="text-center text-muted mb-4">您的夥伴已結束這次聊天，請撥冗給予回饋，讓我們能持續改進！</p>
+                    
+                    <form action="{{ url_for('submit_feedback') }}" method="post">
+                      <input type="hidden" name="rater_id" value="{{ rater_id }}">
+                      <input type="hidden" name="rated_id" value="{{ rated_id }}">
+                      
+                      <div class="mb-3">
+                        <label for="rating" class="form-label">聊天體驗評分</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                          <option value="5">⭐⭐⭐⭐⭐ (非常好)</option>
+                          <option value="4">⭐⭐⭐⭐ (很好)</option>
+                          <option value="3" selected>⭐⭐⭐ (普通)</option>
+                          <option value="2">⭐⭐ (不太好)</option>
+                          <option value="1">⭐ (非常差)</option>
+                        </select>
+                      </div>
+                      
+                      <div class="mb-3">
+                        <label for="gmail" class="form-label">您的 Gmail (選填)</label>
+                        <input type="email" class="form-control" id="gmail" name="gmail" placeholder="name@example.com">
+                      </div>
+                      
+                      <div class="mb-3">
+                        <label for="feedback_text" class="form-label">回饋內容 (選填)</label>
+                        <textarea class="form-control" id="feedback_text" name="feedback_text" rows="3"></textarea>
+                      </div>
+                      
+                      <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">提交評價並返回首頁</button>
+                      </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

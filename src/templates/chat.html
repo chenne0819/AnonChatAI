@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}聊天室{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    {% if matched_user %}
+                        <h5 class="mb-0">與 {{ user2_name }} 的聊天室</h5>
+                        <a href="{{ url_for('feedback_page', rater_id=current_user.id, rated_id=matched_user.id) }}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-sign-out-alt me-1"></i> 結束聊天並評分
+                        </a>
+                    {% else %}
+                        <h5 class="mb-0">正在為您尋找夥伴...</h5>
+                    {% endif %}
+                </div>
+                <div class="card-body" id="chat-messages" style="height: 500px; overflow-y: auto;">
+                    {% if not matched_user %}
+                    <div class="text-center text-muted p-5" id="waiting-message">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>正在努力為您配對中，請稍候...</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <form id="message-form" onsubmit="return false;">
+                        <div class="input-group">
+                            <input type="text" id="message-input" class="form-control" placeholder="輸入訊息..." autocomplete="off" required {% if not matched_user %}disabled{% endif %}>
+                            <button class="btn btn-primary" type="submit" {% if not matched_user %}disabled{% endif %}>
+                                <i class="fas fa-paper-plane"></i> 傳送
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb me-2"></i><strong>AI 聊天話題推薦</strong>
+                </div>
+                <div class="card-body" style="height: 600px; overflow-y: auto;">
+                    {% if matched_user %}
+                        <p class="fst-italic text-muted">{{ greeting | safe }}</p>
+                        <hr>
+                        <h6><i class="fas fa-users me-2"></i>共通話題建議</h6>
+                        <div class="p-2 mb-3 bg-light rounded">
+                            {{ shared_topics | safe }}
+                        </div>
+                        <h6><i class="fas fa-user-secret me-2"></i>給你的專屬話題</h6>
+                        <div class="p-2 bg-light rounded">
+                            {{ user1_topics | safe }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            {{ shared_topics }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const socket = io();
+        const currentUserNickname = "{{ user1_name or '' }}";
+        const currentUserId = {{ current_user.id or 'null' }};
+        const isMatched = {{ 'true' if matched_user else 'false' }};
+
+        // --- 1. 連線後立即加入房間，讓伺服器知道 user_id 和 sid 的對應關係 ---
+        if (currentUserId) {
+            socket.emit('join', {'user_id': currentUserId});
+        }
+        
+        // --- 2. 訊息發送邏輯 ---
+        const form = document.getElementById('message-form');
+        const input = document.getElementById('message-input');
+        if (form) { 
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (input.value && isMatched) {
+                    const messageData = { user: currentUserNickname, text: input.value };
+                    socket.emit('message', messageData);
+                    input.value = '';
+                }
+            });
+        }
+
+        // --- 3. 接收訊息的處理 ---
+        socket.on('message', function(data) {
+            // ... (此處邏輯不變) ...
+            const messagesDiv = document.getElementById('chat-messages');
+            if (!messagesDiv) return;
+            const waitingMessage = document.getElementById('waiting-message');
+            if (waitingMessage) waitingMessage.remove();
+
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('mb-3');
+            if (data.user === currentUserNickname) {
+                messageElement.innerHTML = `<div class="d-flex justify-content-end"><div class="card bg-primary text-white" style="max-width: 75%;"><div class="card-body p-2"><p class="card-text small">${data.text}</p></div></div></div>`;
+            } else {
+                messageElement.innerHTML = `<div class="d-flex justify-content-start"><div class="card bg-light" style="max-width: 75%;"><div class="card-body p-2"><p class="card-subtitle text-muted small">${data.user}</p><p class="card-text small">${data.text}</p></div></div></div>`;
+            }
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+
+        // --- 4. 等待配對的輪詢邏輯 (保持不變) ---
+        if (!isMatched && currentUserId) {
+            const intervalId = setInterval(() => {
+                fetch(`/api/check_match/${currentUserId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'matched') {
+                            clearInterval(intervalId);
+                            window.location.href = data.redirect_url; 
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking match status:', error);
+                        clearInterval(intervalId);
+                    });
+            }, 3000);
+        }
+
+        // --- 5. 新增：監聽來自伺服器的強制跳轉事件 ---
+        socket.on('force_feedback', function(data) {
+            alert(data.message); // 提醒使用者
+            window.location.href = data.redirect_url; // 強制跳轉
+        });
+
+        socket.on('partner_disconnected', function(data) {
+            alert(data.message); // 提醒使用者夥伴已斷線
+            // 可以選擇跳轉回首頁
+            window.location.href = "{{ url_for('home') }}";
+        });
+    });
+</script>
+{% endblock %}

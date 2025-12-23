@@ -1,0 +1,15 @@
+{
+    "authors": [
+        {
+            "name": "XXX1",
+            "class": "幾班1",
+            "student_id": "學號1"
+        },
+        {
+            "name": "XXX2",
+            "class": "幾班2",
+            "student_id": "學號2"
+        }
+    ],
+    "site_description": "這是一個結合Gemini AI的匿名社交系統 (AnonChatAI)。我們致力於透過分析您的個性和興趣，為您尋找最合拍的飯友和新朋友。無論您是想單純吃飯，還是希望在餐桌上暢聊，我們都能為您找到最適合的夥伴。"
+}

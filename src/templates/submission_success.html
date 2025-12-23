@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}提交成功{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <i class="fas fa-check-circle fa-4x text-success mb-4" data-aos="zoom-in"></i>
+                    <h1 class="card-title" data-aos="fade-up">提交成功！</h1>
+                    <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">感謝您撥冗填寫個人檔案，我們已經收到您的資料。</p>
+                    
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4" data-aos="fade-up" data-aos-delay="200">
+                        <a href="{{ url_for('home') }}" class="btn btn-secondary btn-lg px-4">
+                            <i class="fas fa-home me-2"></i>返回首頁
+                        </a>
+                        <a href="{{ url_for('chat_room', user_id=user_id) }}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-comments me-2"></i>開始聊天！
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

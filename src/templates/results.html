@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}配對結果 - 智能社交系統{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center">
+        <h1 data-aos="fade-up">為您找到的夥伴</h1>
+        <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">根據您的資料，我們推薦以下朋友給您！</p>
+    </div>
+
+    <div class="row mt-5">
+        {% if matched_users_with_topics %}
+            {% for user in matched_users_with_topics %}
+            <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in">
+                <div class="card shadow-sm h-100 text-center">
+                    <div class="card-body d-flex flex-column">
+                        <img src="https://i.pravatar.cc/150?u={{ user.id }}" class="rounded-circle mx-auto mb-3" style="width:100px; height:100px;">
+                        
+                        <h5 class="card-title">夥伴 #{{ user.id }}</h5>
+
+                        <span class="badge bg-info my-2">
+                            {% if user.gender == 'male' %}
+                                <i class="fas fa-mars"></i> 男性
+                            {% else %}
+                                <i class="fas fa-venus"></i> 女性
+                            {% endif %}
+                        </span>
+                        
+                        <p class="text-muted">
+                            <i class="fas fa-smile-beam me-1"></i> 
+                            {{ user.personality | replace('very_extrovert', '非常外向') | replace('extrovert', '外向') | replace('introvert', '內向') | replace('very_introvert', '非常內向') }}
+                        </p>
+                        
+                        <hr>
+                        <p class="card-text fw-bold">興趣標籤</p>
+                        <div class="mb-3">
+                            <span class="badge bg-secondary"><i class="fas fa-tag me-1"></i>{{ user.interest1 }}</span>
+                            {% if user.interest2 %}<span class="badge bg-secondary"><i class="fas fa-tag me-1"></i>{{ user.interest2 }}</span>{% endif %}
+                            {% if user.interest3 %}<span class="badge bg-secondary"><i class="fas fa-tag me-1"></i>{{ user.interest3 }}</span>{% endif %}
+                        </div>
+                        
+                        <div class="accordion mt-auto" id="accordionTopics{{ user.id }}">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ user.id }}">
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ user.id }}" aria-expanded="false" aria-controls="collapse{{ user.id }}">
+                                        <i class="fas fa-comments me-2"></i>查看 AI 聊天話題建議
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ user.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ user.id }}" data-bs-parent="#accordionTopics{{ user.id }}">
+                                    <div class="accordion-body text-start">
+                                        {{ user.topics | safe }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col">
+                <div class="alert alert-warning" role="alert">
+                    唉呀！目前沒有找到合適的夥伴，請稍後再來看看！
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="text-center mt-4">
+         <a href="/register" class="btn btn-secondary">重新填寫檔案</a>
+    </div>
+</div>
+{% endblock %}

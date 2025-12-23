@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}查看回饋 - 管理員{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 data-aos="fade-up">使用者回饋列表</h1>
+    <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">所有使用者在結束聊天後提交的回饋紀錄。</p>
+    <div class="table-responsive" data-aos="fade-up" data-aos-delay="200">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>評分者 ID</th>
+                    <th>被評分者 ID</th>
+                    <th>評分 (1-5)</th>
+                    <th>Gmail</th>
+                    <th>回饋內容</th>
+                    <th>時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in feedback_list %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.rater_id }}</td>
+                    <td>{{ item.rated_id }}</td>
+                    <td>{{ item.rating }}</td>
+                    <td>{{ item.gmail }}</td>
+                    <td>{{ item.feedback_text }}</td>
+                    <td>{{ item.timestamp }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">目前沒有任何回饋紀錄。</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
