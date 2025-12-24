@@ -17,29 +17,35 @@ class SocialAgent:
             return "錯誤：Gemini API 金鑰未設定。"
         
         model = genai.GenerativeModel('gemini-2.5-flash')
+        # JSON Schema for the output
         prompt = f"""
-        # 角色
-        你是一位專門為初次見面的兩人尋找共同話題的社交專家。
-        # 任務
-        根據用戶 {user1_name} 和 {user2_name} 的興趣，生成問候語、共通話題、以及分別給兩人的專屬話題建議。
-        # 上下文 (用戶資訊)
-        * {user1_name} 的興趣是：{interests1}
-        * {user2_name} 的興趣是：{interests2}
-        # 輸出格式要求
-        * **語言：請務必全程使用「繁體中文 (Traditional Chinese)」進行回覆。**
-        * 請嚴格按照以下標籤輸出，不要改變標籤格式，也不要使用Markdown清單符號：
-        [GREETING]
-        (在這裡放置一句輕鬆的問候語，並介紹自己是「智能社交聊天助手」)
-        [SHARED]
-        (在這裡放置1-2個雙方都可能感興趣的共通話題)
-        [FOR_{user1_name}]
-        (在這裡放置2個建議 {user1_name} 可以問 {user2_name} 的話題)
-        [FOR_{user2_name}]
-        (在這裡放置2個建議 {user2_name} 可以問 {user1_name} 的話題)
+        # Role
+        You are a social expert connecting two strangers.
+        
+        # Task
+        Generate a JSON object containing a greeting, shared topics, and individual topic suggestions based on user interests.
 
+        # User Info
+        * {user1_name}: {interests1}
+        * {user2_name}: {interests2}
+
+        # JSON Output Format (Strict)
+        Return ONLY valid JSON with this structure:
+        {{
+            "greeting": "Traditional Chinese greeting...",
+            "shared_topics": ["Topic 1", "Topic 2"],
+            "user1_topics": ["Topic for User 1 to ask", "Topic for User 1 to ask"],
+            "user2_topics": ["Topic for User 2 to ask", "Topic for User 2 to ask"]
+        }}
+        
+        **Language Rule**: All values inside the JSON MUST be in Traditional Chinese.
         """
         try:
-            response = model.generate_content(prompt)
+            # Generate content using the new model behavior
+            response = model.generate_content(
+                prompt,
+                generation_config={"response_mime_type": "application/json"}
+            )
             return response.text
         except Exception as e:
             print(f"Gemini API Error: {e}")

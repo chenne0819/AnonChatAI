@@ -8,7 +8,7 @@ Powered by **Google Gemini AI**, it goes beyond simple matching by providing sma
 
 -   **Smart Matching**: Matches users based on implicit criteria like dining purpose, gender preference, and personality traits.
 -   **Anonymous Chat**: Real-time anonymous messaging system using WebSockets.
--   **AI-Powered Icebreakers**: Uses **Gemini 2.5 Flash** to analyze user interests and generate personalized greeting messages and shared discussion topics.
+-   **AI-Powered Icebreakers**: Uses **Gemini 2.5 Flash** with **JSON Structured Output** to ensure reliable, error-free parsing of user interests. Generates personalized greeting messages and shared discussion topics in a strict format.
 -   **Feedback System**: Allows users to rate their partners and leave feedback after the chat ends.
 -   **Admin Panel**: Secure interface for administrators to monitor active users and review feedback.
 

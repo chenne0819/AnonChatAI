@@ -220,19 +220,21 @@ def chat_room(user_id):
         # Call the AI agent to generate conversation topics
         raw_response = agent.generate_topics(user1_name, current_user_interests, user2_name, matched_user_interests)
         print(f"DEBUG_AI_RESPONSE: {raw_response}")
-        # Parse the AI response using Regex to extract specific sections
-        greeting_match = re.search(r'\[GREETING\]\s*(.*?)\s*\[SHARED\]', raw_response, re.DOTALL)
-        shared_match = re.search(r'\[SHARED\]\s*(.*?)\s*\[FOR_', raw_response, re.DOTALL)
-        user1_match = re.search(rf'\[FOR_{user1_name}\]\s*(.*?)\s*\[FOR_{user2_name}\]', raw_response, re.DOTALL)
-        user2_match = re.search(rf'\[FOR_{user2_name}\]\s*(.*)', raw_response, re.DOTALL)
-        if greeting_match: greeting = greeting_match.group(1).strip().replace('\n', '<br>')
-        if shared_match: shared_topics = shared_match.group(1).strip().replace('\n', '<br>')
-        if user1_match: user1_topics = user1_match.group(1).strip().replace('\n', '<br>')
-        if user2_match: user2_topics = user2_match.group(1).strip().replace('\n', '<br>')
-
-        # If parsing fails and an error message is returned, show the error
-        if "呼叫 API 時發生錯誤" in raw_response:
-             shared_topics = raw_response
+        # Parse the JSON response from the AI
+        try:
+            ai_data = json.loads(raw_response)
+            greeting = ai_data.get("greeting", "").replace('\n', '<br>')
+            shared_topics_list = ai_data.get("shared_topics", [])
+            user1_topics_list = ai_data.get("user1_topics", [])
+            user2_topics_list = ai_data.get("user2_topics", [])
+            
+            # Format lists into HTML strings
+            shared_topics = "<br>".join(shared_topics_list)
+            user1_topics = "<br>".join(user1_topics_list)
+            user2_topics = "<br>".join(user2_topics_list)
+        except json.JSONDecodeError:
+            print(f"Error parsing JSON: {raw_response}")
+            shared_topics = "Error generating topics. Please try again."
     conn.close()
     return render_template('chat.html', current_user=current_user, matched_user=matched_user, greeting=greeting, shared_topics=shared_topics, user1_topics=user1_topics, user2_topics=user2_topics, user1_name=user1_name, user2_name=user2_name)
 
