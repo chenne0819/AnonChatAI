@@ -1,73 +1,254 @@
 {% extends "base.html" %}
 
-{% block title %}歡迎來到智能社交系統{% endblock %}
+{% block title %}AnonChatAI - 遇見志同道合的新朋友{% endblock %}
 
 {% block content %}
-<div class="hero-section" style="background-image: url({{ url_for('static', filename='images/home.png') }})">
-    <div class="hero-content text-center">
-        <h1 data-aos="fade-up">智能社交系統</h1>
-        <p class="lead my-4" data-aos="fade-up" data-aos-delay="200">在這裡，遇見志同道合的新朋友。</p>
-        <div data-aos="fade-up" data-aos-delay="400">
-            <a href="/register" class="btn btn-primary btn-lg px-4 me-sm-3">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% if pending_contact_method and pending_contact_id %}
+<div class="pending-contact-banner" style="max-width:520px;margin:1rem auto;background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#065f46;padding:1.25rem 1.5rem;border-radius:16px;font-weight:600;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+    <div style="margin-bottom:1rem;">你們都同意交換聯絡方式！</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:0.5rem;color:#065f46;"><i class="fas fa-user"></i> 對方的{{ pending_contact_method }}：</div>
+    <div style="background:#1a1a1a;color:#fff;border-radius:14px;padding:1rem 1.5rem;font-weight:600;margin-bottom:0.75rem;">{{ pending_contact_id }}</div>
+    <small style="opacity:0.9;">請妥善保存，返回首頁後將不再顯示</small>
+</div>
+{% endif %}
+
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title" data-aos="fade-up">AnonChatAI</h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">連結人際、創新體驗。在這裡，遇見志同道合的新朋友。</p>
+        <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
+            <a href="/register" class="btn-hero btn-hero-primary">
                 <i class="fas fa-rocket"></i> 立即開始
             </a>
-            <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4">了解更多</a>
+            <a href="#how-it-works" class="btn-hero btn-hero-outline">了解更多</a>
         </div>
     </div>
-</div>
+</section>
+
+<section class="how-section" id="how-it-works">
+    <div class="how-container">
+        <h2 class="section-title" data-aos="fade-up">如何運作</h2>
+        <div class="how-grid">
+            <div class="how-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="how-icon"><i class="fas fa-user-edit"></i></div>
+                <h3>1. 建立檔案</h3>
+                <p>花幾分鐘填寫您的個性、興趣與偏好，讓我們更了解您。</p>
+            </div>
+            <div class="how-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="how-icon"><i class="fas fa-cogs"></i></div>
+                <h3>2. 智能配對</h3>
+                <p>我們獨特的演算法會為您在茫茫人海中，尋找最契合的夥伴。</p>
+            </div>
+            <div class="how-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="how-icon"><i class="fas fa-comments"></i></div>
+                <h3>3. 開始交流</h3>
+                <p>查看為您推薦的朋友，開始一場愉快的對話吧！</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="feature-section">
+    <div class="feature-container">
+        <div class="feature-image-wrap" data-aos="fade-right">
+            <img src="{{ url_for('static', filename='images/home.jpg') }}" alt="MORA 智能社交系統 - 連結人際、創新體驗" class="feature-image">
+        </div>
+        <div class="feature-content" data-aos="fade-left">
+            <h2 class="feature-title">不只是吃飯，更是心靈的交流</h2>
+            <p class="feature-desc">我們相信，一頓美好的餐點，加上一個對的人，可以創造無限可能。我們的系統不只幫您找飯友，更幫您找知己。</p>
+            <ul class="feature-list">
+                <li><i class="fas fa-check-circle"></i> 基於心理學的個性分析</li>
+                <li><i class="fas fa-check-circle"></i> 多維度的興趣匹配</li>
+                <li><i class="fas fa-check-circle"></i> 安全、匿名的交流環境</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
 <style>
-    .hero-section { position: relative; background-size: cover; background-position: center; height: 90vh; display: flex; align-items: center; justify-content: center; color: white; }
-    .hero-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); }
-    .hero-content { position: relative; z-index: 1; }
-    .hero-content h1 { font-size: 4.5rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+    .hero-section {
+        position: relative;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: url({{ url_for('static', filename='images/home.jpg') }});
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+    }
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15,23,42,0.75) 0%, rgba(30,41,59,0.6) 100%);
+    }
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        max-width: 720px;
+    }
+    .hero-title {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-hero {
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .btn-hero-primary {
+        background: #fff;
+        color: #0f172a;
+    }
+    .btn-hero-primary:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        transform: translateY(-2px);
+    }
+    .btn-hero-outline {
+        background: transparent;
+        color: #fff;
+        border: 2px solid rgba(255,255,255,0.8);
+    }
+    .btn-hero-outline:hover {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    .how-section {
+        padding: 4rem 1.5rem;
+        background: #fff;
+    }
+    .how-container {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+    .section-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .how-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    @media (max-width: 768px) {
+        .how-grid { grid-template-columns: 1fr; }
+    }
+    .how-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    .how-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .how-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 1.25rem;
+        background: #0f172a;
+        color: #fff;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .how-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 0.75rem;
+    }
+    .how-card p {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    .feature-section {
+        padding: 4rem 1.5rem;
+        background: #f8f9fa;
+    }
+    .feature-container {
+        max-width: 960px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+    @media (max-width: 768px) {
+        .feature-container { grid-template-columns: 1fr; }
+    }
+    .feature-image-wrap {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+    .feature-image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .feature-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 1rem;
+    }
+    .feature-desc {
+        font-size: 1.1rem;
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        font-weight: 500;
+        color: #334155;
+    }
+    .feature-list i {
+        color: #10b981;
+        font-size: 1.1rem;
+    }
 </style>
-
-
-<div class="container my-5" id="how-it-works">
-    <section class="text-center py-5">
-        <h2 class="mb-4" data-aos="fade-up">如何運作</h2>
-        <div class="row">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="p-4">
-                    <i class="fas fa-user-edit fa-3x text-primary mb-3"></i>
-                    <h4>1. 建立檔案</h4>
-                    <p class="text-muted">花幾分鐘填寫您的個性、興趣與偏好，讓我們更了解您。</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="p-4">
-                    <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
-                    <h4>2. 智能配對</h4>
-                    <p class="text-muted">我們獨特的演算法會為您在茫茫人海中，尋找最契合的夥伴。</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="p-4">
-                    <i class="fas fa-comments fa-3x text-primary mb-3"></i>
-                    <h4>3. 開始交流</h4>
-                    <p class="text-muted">查看為您推薦的朋友，開始一場愉快的對話吧！</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-5 bg-light rounded">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6" data-aos="fade-right">
-                    <img src="{{ url_for('static', filename='images/home_bottom.png') }}" class="img-fluid rounded shadow" alt="網站特色圖片">
-                </div>
-                <div class="col-md-6" data-aos="fade-left">
-                    <h3>不只是吃飯，更是心靈的交流</h3>
-                    <p class="lead">我們相信，一頓美好的餐點，加上一個對的人，可以創造無限可能。我們的系統不只幫您找飯友，更幫您找知己。</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>基於心理學的個性分析</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>多維度的興趣匹配</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>安全、匿名的交流環境</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
 {% endblock %}

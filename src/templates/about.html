@@ -1,24 +1,90 @@
 {% extends "base.html" %}
 
-{% block title %}關於我們 - 智能社交系統{% endblock %}
+{% block title %}關於我們 - AnonChatAI{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body p-5">
-                    <h1 class="card-title text-center mb-4">關於我們</h1>
-                    <h2 class="mt-5">網站介紹</h2>
-                    <p class="lead">{{ site_description }}</p>
-                    <h2 class="mt-5">開發團隊</h2>
-                    <ul class="list-group list-group-flush">
-                        {% for author in authors %}
-                            <li class="list-group-item fs-5">{{ author.name }} / {{ author.class }} / {{ author.student_id }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+<style>
+    .about-page {
+        padding: 2rem 1rem 3rem;
+    }
+    .about-card {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #eaeaea;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    .about-card-body {
+        padding: 2.5rem 2rem;
+    }
+    .about-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .about-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+    .about-desc {
+        font-size: 1.05rem;
+        line-height: 1.5;
+        color: #475569;
+        margin-bottom: 2rem;
+    }
+    .about-team-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .about-team-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        background: #f8fafc;
+        border-radius: 14px;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e2e8f0;
+        font-weight: 500;
+        color: #334155;
+        transition: all 0.2s ease;
+    }
+    .about-team-item:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    .about-team-item i {
+        width: 24px;
+        margin-right: 1rem;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="about-page">
+    <div class="about-card">
+        <div class="about-card-body">
+            <h1 class="about-title">關於我們</h1>
+            
+            <h2 class="about-section-title">網站介紹</h2>
+            <p class="about-desc">{{ site_description }}</p>
+            
+            <h2 class="about-section-title">開發團隊</h2>
+            <ul class="about-team-list">
+                {% for author in authors %}
+                <li class="about-team-item">
+                    <i class="fas fa-user"></i>
+                    {{ author.name }} / {{ author.class }} / {{ author.student_id }}
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

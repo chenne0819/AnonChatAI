@@ -1,48 +1,293 @@
 {% extends "base.html" %}
 
-{% block title %}給予評價 - 智能社交系統{% endblock %}
+{% block title %}給予評價 - AnonChatAI{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-5">
-                    <h1 class="card-title text-center mb-2">給予夥伴 #{{ rated_id }} 評價</h1>
-                    <p class="text-center text-muted mb-4">您的夥伴已結束這次聊天，請撥冗給予回饋，讓我們能持續改進！</p>
-                    
-                    <form action="{{ url_for('submit_feedback') }}" method="post">
-                      <input type="hidden" name="rater_id" value="{{ rater_id }}">
-                      <input type="hidden" name="rated_id" value="{{ rated_id }}">
-                      
-                      <div class="mb-3">
-                        <label for="rating" class="form-label">聊天體驗評分</label>
-                        <select class="form-select" id="rating" name="rating" required>
-                          <option value="5">⭐⭐⭐⭐⭐ (非常好)</option>
-                          <option value="4">⭐⭐⭐⭐ (很好)</option>
-                          <option value="3" selected>⭐⭐⭐ (普通)</option>
-                          <option value="2">⭐⭐ (不太好)</option>
-                          <option value="1">⭐ (非常差)</option>
-                        </select>
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label for="gmail" class="form-label">您的 Gmail (選填)</label>
-                        <input type="email" class="form-control" id="gmail" name="gmail" placeholder="name@example.com">
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label for="feedback_text" class="form-label">回饋內容 (選填)</label>
-                        <textarea class="form-control" id="feedback_text" name="feedback_text" rows="3"></textarea>
-                      </div>
-                      
-                      <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">提交評價並返回首頁</button>
-                      </div>
-                    </form>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .feedback-card {
+        max-width: 520px;
+        margin: 2rem auto;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        border: 1px solid #eaeaea;
+        overflow: hidden;
+    }
+    .feedback-card-body {
+        padding: 2.5rem 2rem;
+        text-align: center;
+    }
+    .feedback-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+    .thank-you-banner {
+        background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        color: #9a3412;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+    }
+    .exchange-section {
+        margin-bottom: 2rem;
+    }
+    .exchange-question {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+    }
+    .exchange-hint {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+    .exchange-privacy {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 1.25rem;
+    }
+    .exchange-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-exchange {
+        flex: 1;
+        min-width: 140px;
+        padding: 14px 24px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+    .btn-exchange-yes {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+    .btn-exchange-yes:hover {
+        background: #1e293b;
+        color: #fff;
+    }
+    .btn-exchange-no {
+        background: #ffffff;
+        color: #1a1a1a;
+        border-color: #e2e8f0;
+    }
+    .btn-exchange-no:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    .btn-exchange-no.selected {
+        box-shadow: 0 0 0 2px #0f172a;
+    }
+    .btn-exchange-yes.selected {
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+    }
+    .divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 2rem 0;
+    }
+    .form-section {
+        text-align: left;
+    }
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 1rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #94a3b8;
+        box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2);
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: #0f172a;
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1.5rem;
+    }
+    .btn-submit:hover {
+        background: #1e293b;
+        color: #fff;
+    }
+    .btn-submit:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+    }
+    .exchange-result {
+        padding: 1rem 1.25rem;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+    }
+    .exchange-result.status-left { background: #fef2f2; color: #991b1b; }
+    .exchange-result.status-waiting { background: #eff6ff; color: #1e40af; }
+    .exchange-result.status-agreed { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ecfdf5; color: #065f46; }
+    .exchange-result .contact-id-box { background: #1a1a1a; color: #fff; padding: 1rem 1.5rem; border-radius: 14px; font-weight: 600; font-size: 1.1rem; margin-top: 0.75rem; width: 100%; max-width: 280px; text-align: center; margin-left: auto; margin-right: auto; }
+    .exchange-result .contact-label { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 1rem; font-weight: 600; color: #065f46; width: 100%; }
+    .exchange-result.status-declined { background: #fefce8; color: #854d0e; }
+    .exchange-result.status-thanks { background: #f8fafc; color: #64748b; }
+    .btn-refresh { margin-top: 0.75rem; padding: 6px 14px; font-size: 0.9rem; border-radius: 10px; }
+</style>
+
+<div class="feedback-card">
+    <div class="feedback-card-body">
+        <h1 class="feedback-title">給予夥伴 #{{ rated_id }} 評價</h1>
+        <div class="thank-you-banner">感謝您參與這次愉快的交流！</div>
+
+        <form action="{{ url_for('submit_feedback') }}" method="post" id="feedback-form">
+            <input type="hidden" name="rater_id" value="{{ rater_id }}">
+            <input type="hidden" name="rated_id" value="{{ rated_id }}">
+            <input type="hidden" name="wants_contact_exchange" id="wants_contact_exchange" value="0">
+
+            <!-- 交換聯絡方式 -->
+            <div class="exchange-section">
+                <div class="exchange-question">您是否想要交換聯絡方式？</div>
+                <div class="exchange-hint">只有雙方都同意的情況下，才會顯示對方的聯絡方式</div>
+                <div class="exchange-privacy">您的選擇將會匿名傳達給對方</div>
+                <div class="exchange-buttons">
+                    <button type="button" class="btn-exchange btn-exchange-yes" data-value="1">是，我願意交換</button>
+                    <button type="button" class="btn-exchange btn-exchange-no selected" data-value="0" aria-pressed="true">否，不需要</button>
                 </div>
+                <div id="exchange-result" class="exchange-result mt-3" style="display:none;"></div>
             </div>
-        </div>
+
+            <div class="divider"></div>
+
+            <!-- 評價表單 -->
+            <div class="form-section">
+                <div class="form-section-title">聊天體驗評分</div>
+                <div class="mb-3">
+                    <label for="rating" class="form-label">評分</label>
+                    <select class="form-select form-select-lg w-100" id="rating" name="rating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (非常好)</option>
+                        <option value="4">⭐⭐⭐⭐ (很好)</option>
+                        <option value="3" selected>⭐⭐⭐ (普通)</option>
+                        <option value="2">⭐⭐ (不太好)</option>
+                        <option value="1">⭐ (非常差)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="gmail" class="form-label">您的 Gmail (選填)</label>
+                    <input type="email" class="form-control" id="gmail" name="gmail" placeholder="name@example.com">
+                </div>
+
+                <div class="mb-3">
+                    <label for="feedback_text" class="form-label">回饋內容 (選填)</label>
+                    <textarea class="form-control" id="feedback_text" name="feedback_text" rows="3" placeholder="分享您的想法..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">提交評價並返回首頁</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exchangeBtns = document.querySelectorAll('.btn-exchange');
+    const hiddenInput = document.getElementById('wants_contact_exchange');
+    const resultDiv = document.getElementById('exchange-result');
+    const raterId = {{ rater_id }};
+    const ratedId = {{ rated_id }};
+
+    function fetchExchangeStatus() {
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'exchange-result mt-3 status-waiting';
+        resultDiv.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>查詢中...';
+
+        fetch(`/api/contact_exchange_status/${raterId}/${ratedId}`)
+            .then(r => r.json())
+            .then(data => {
+                resultDiv.className = 'exchange-result mt-3 status-' + data.status;
+                let html = data.message;
+                if (data.status === 'agreed' && data.partner_contact_method && data.partner_contact_id) {
+                    const methodLabel = data.partner_contact_method === 'LINE' ? 'LINE' : 'Instagram';
+                    html += '<div class="contact-label"><i class="fas fa-user"></i> 對方的' + methodLabel + '：</div>';
+                    html += '<div class="contact-id-box">' + escapeHtml(data.partner_contact_id) + '</div>';
+                }
+                resultDiv.innerHTML = html;
+                if (data.status === 'agreed' || data.status === 'declined') {
+                    if (window.pollInterval) clearInterval(window.pollInterval);
+                }
+            })
+            .catch(() => {
+                resultDiv.className = 'exchange-result mt-3 status-left';
+                resultDiv.textContent = '查詢失敗，請稍後再試';
+                if (window.pollInterval) clearInterval(window.pollInterval);
+            });
+    }
+
+    function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+    }
+
+    exchangeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            exchangeBtns.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            const wantsExchange = this.dataset.value;
+            hiddenInput.value = wantsExchange;
+
+            fetch(`/api/express_exchange_intent/${raterId}/${ratedId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({wants_exchange: wantsExchange})
+            }).then(() => {
+                if (wantsExchange === '1') {
+                    fetchExchangeStatus();
+                    if (!window.pollInterval) {
+                        window.pollInterval = setInterval(fetchExchangeStatus, 3000);
+                    }
+                } else {
+                    if (window.pollInterval) {
+                        clearInterval(window.pollInterval);
+                        window.pollInterval = null;
+                    }
+                    resultDiv.style.display = 'block';
+                    resultDiv.className = 'exchange-result mt-3 status-thanks';
+                    resultDiv.textContent = '您已選擇不交換';
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

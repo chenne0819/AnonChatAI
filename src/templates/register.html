@@ -1,91 +1,325 @@
 {% extends "base.html" %}
 
-{% block title %}開始配對 - 智能社交系統{% endblock %}
+{% block title %}開始配對 - AnonChatAI{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body p-5">
-                    <h1 class="card-title text-center mb-4">建立你的個人檔案</h1>
-                    <p class="text-center text-muted mb-5">請填寫以下資訊，讓我們為你找到最合適的朋友！</p>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #0a0a0a;
+        --primary-hover: #2a2a2a;
+        --secondary: #6c757d;
+        --bg-color: #f8f9fa;
+        --text-color: #1a1a1a;
+        --border-color: #eaeaea;
+        --input-bg: #f2f2f2;
+    }
+    body {
+        background-color: var(--bg-color);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.15rem;
+        color: var(--text-color);
+    }
+    .mora-card {
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .mora-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-color);
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+    }
+    .mora-subtitle {
+        color: var(--secondary);
+        font-weight: 500;
+        font-size: 1.35rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.85;
+    }
+    .form-label {
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    .custom-checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    .mora-checkbox-wrapper {
+        border: 2px solid var(--input-bg);
+        border-radius: 12px;
+        padding: 12px;
+        transition: all 0.2s ease;
+        background: var(--input-bg);
+    }
+    .mora-checkbox-wrapper:hover {
+        border-color: #d1d1d1;
+    }
+    .mora-checkbox-wrapper.checked-state {
+        border-color: var(--primary);
+        background-color: #ffffff;
+    }
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    .form-check-input {
+        width: 1.4em;
+        height: 1.4em;
+        margin-right: 10px;
+        cursor: pointer;
+        border: 2px solid #ccc;
+    }
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(10, 10, 10, 0.25);
+        border-color: var(--primary);
+    }
+    .form-check-label {
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--text-color);
+        padding-top: 3px;
+        font-size: 1.15rem;
+    }
+    .form-select, .form-control {
+        background-color: var(--input-bg);
+        border: 2px solid var(--input-bg);
+        border-radius: 12px;
+        padding: 16px 20px; 
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.15rem; 
+        transition: all 0.2s ease;
+    }
+    .form-select:focus, .form-control:focus {
+        background-color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: none;
+        outline: none;
+    }
+    .radio-group .mora-radio-wrapper {
+        border: 2px solid var(--input-bg);
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 0.8rem;
+        transition: all 0.2s ease;
+        background: var(--input-bg);
+    }
+    .radio-group .mora-radio-wrapper:hover {
+        border-color: #d1d1d1;
+    }
+    .mora-required {
+        color: #dc3545;
+        font-size: 1.4rem;
+        vertical-align: middle;
+    }
+    .btn-submit {
+        background-color: var(--primary);
+        color: #fff;
+        border-radius: 16px;
+        border: none;
+        padding: 18px; 
+        font-weight: 800;
+        font-size: 1.4rem; 
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .btn-submit:hover {
+        background-color: var(--primary-hover);
+        color: #fff;
+    }
+    
+    @media (max-width: 768px) {
+        .custom-checkbox-grid { grid-template-columns: repeat(2, 1fr); }
+        .mora-title { font-size: 2.2rem; }
+    }
+    @media (max-width: 480px) {
+        .custom-checkbox-grid { grid-template-columns: 1fr; }
+    }
+</style>
 
-                    <form method="post" action="/register">
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">今日用餐目的 <span class="text-danger">*</span></label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="meal_purpose" id="purpose_eat" value="eat" required>
-                                <label class="form-check-label" for="purpose_eat">單純吃飯</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="meal_purpose" id="purpose_chat" value="chat" required>
-                                <label class="form-check-label" for="purpose_chat">吃飯並與他人聊天</label>
-                            </div>
-                        </div>
+<div class="my-5 pb-5 d-flex justify-content-center">
+    <!-- Block layout container constraint -->
+    <div class="card mora-card p-4 p-md-5 w-100" style="max-width: 960px; margin: 0 1rem;">
+        <div class="text-center mb-5">
+            <h1 class="mora-title">Welcome to AnonChatAI</h1>
+            <p class="mora-subtitle">請填寫您的基本資料，我們將為您尋找最合適的聊天對象</p>
+        </div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">性別 <span class="text-danger">*</span></label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gender" id="gender_male" value="male" required>
-                                <label class="form-check-label" for="gender_male">男性</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gender" id="gender_female" value="female" required>
-                                <label class="form-check-label" for="gender_female">女性</label>
-                            </div>
-                        </div>
+        <form method="post" action="/register">
+            <!-- 性別 -->
+            <div class="mb-5">
+                <label class="form-label">您的性別 <span class="mora-required">*</span></label>
+                <select class="form-select input-lg" name="gender" required>
+                    <option value="" selected disabled>請選擇您的性別</option>
+                    <option value="male">男性</option>
+                    <option value="female">女性</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">個性 <span class="text-danger">*</span></label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="personality" id="p_very_extrovert" value="very_extrovert" required>
-                                <label class="form-check-label" for="p_very_extrovert">非常外向</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="personality" id="p_extrovert" value="extrovert" required>
-                                <label class="form-check-label" for="p_extrovert">外向</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="personality" id="p_introvert" value="introvert" required>
-                                <label class="form-check-label" for="p_introvert">內向</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="personality" id="p_very_introvert" value="very_introvert" required>
-                                <label class="form-check-label" for="p_very_introvert">非常內向</label>
-                            </div>
-                        </div>
+            <!-- 興趣愛好 -->
+            <div class="mb-5">
+                <label class="form-label">興趣愛好 <span class="mora-required">*</span></label>
+                <div class="custom-checkbox-grid">
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="科技" id="cb1">
+                        <label class="form-check-label flex-grow-1" for="cb1">🚀 科技</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="動漫" id="cb2">
+                        <label class="form-check-label flex-grow-1" for="cb2">✨ 動漫</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="心理學" id="cb3">
+                        <label class="form-check-label flex-grow-1" for="cb3">🧠 心理學</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="音樂" id="cb4">
+                        <label class="form-check-label flex-grow-1" for="cb4">🎵 音樂</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="電影" id="cb5">
+                        <label class="form-check-label flex-grow-1" for="cb5">🎬 電影</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="閱讀" id="cb6">
+                        <label class="form-check-label flex-grow-1" for="cb6">📚 閱讀</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="旅行" id="cb7">
+                        <label class="form-check-label flex-grow-1" for="cb7">✈️ 旅行</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="運動" id="cb8">
+                        <label class="form-check-label flex-grow-1" for="cb8">🏃 運動</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="烹飪" id="cb9">
+                        <label class="form-check-label flex-grow-1" for="cb9">🍳 烹飪</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="攝影" id="cb10">
+                        <label class="form-check-label flex-grow-1" for="cb10">📸 攝影</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="藝術" id="cb11">
+                        <label class="form-check-label flex-grow-1" for="cb11">🎨 藝術</label>
+                    </div>
+                    <div class="mora-checkbox-wrapper form-check d-flex align-items-center m-0">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" name="interests" value="遊戲" id="cb12">
+                        <label class="form-check-label flex-grow-1" for="cb12">🎮 遊戲</label>
+                    </div>
+                </div>
+                <small class="text-danger mt-2 fw-bold d-block">請至少選擇一項</small>
+            </div>
 
-                        <div class="mb-4">
-                            <label for="interest1" class="form-label fw-bold">興趣 (請至少填寫一項) <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control mb-2" id="interest1" name="interest1" placeholder="興趣1" required>
-                            <input type="text" class="form-control mb-2" id="interest2" name="interest2" placeholder="興趣2 (選填)">
-                            <input type="text" class="form-control" id="interest3" name="interest3" placeholder="興趣3 (選填)">
-                        </div>
+            <!-- 個性 -->
+            <div class="mb-5">
+                <label class="form-label">個性 <span class="mora-required">*</span></label>
+                <select class="form-select" name="personality" required>
+                    <option value="" selected disabled>請選擇您的個性</option>
+                    <option value="very_extrovert">完全 E 人 (非常外向)</option>
+                    <option value="extrovert">偏 E 人 (外向)</option>
+                    <option value="introvert">偏 I 人 (內向)</option>
+                    <option value="very_introvert">完全 I 人 (非常內向)</option>
+                </select>
+            </div>
 
-                        <div class="mb-5">
-                            <label class="form-label fw-bold">希望的聊天對象傾向 <span class="text-danger">*</span></label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="chat_preference" id="pref_male" value="male" required>
-                                <label class="form-check-label" for="pref_male">男性</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="chat_preference" id="pref_female" value="female" required>
-                                <label class="form-check-label" for="pref_female">女性</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="chat_preference" id="pref_any" value="any" required>
-                                <label class="form-check-label" for="pref_any">皆可</label>
-                            </div>
-                        </div>
+            <!-- 用餐目的 -->
+            <div class="mb-5">
+                <label class="form-label">用餐目的 <span class="mora-required">*</span></label>
+                <select class="form-select" name="meal_purpose" required>
+                    <option value="" selected disabled>請選擇您的用餐目的</option>
+                    <option value="eat">單純想吃飯 🍽️</option>
+                    <option value="chat">想邊吃邊聊天 🗣️</option>
+                </select>
+            </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-magic me-2"></i>完成並尋找夥伴</button>
-                        </div>
-                    </form>
+            <!-- 聊天對象性別偏好 -->
+            <div class="mb-5">
+                <label class="form-label">聊天對象性別偏好 <span class="mora-required">*</span></label>
+                <select class="form-select" name="chat_preference" required>
+                    <option value="" selected disabled>請選擇偏好</option>
+                    <option value="male">男性</option>
+                    <option value="female">女性</option>
+                    <option value="any">皆可，好聊最重要</option>
+                </select>
+            </div>
+
+            <!-- 聯絡方式 -->
+            <div class="mb-5 radio-group">
+                <label class="form-label mb-3">聯絡方式 <span class="mora-required">*</span></label>
+                <div class="mora-radio-wrapper form-check d-flex align-items-center">
+                    <input class="form-check-input flex-shrink-0" type="radio" name="contact_method" id="contact_ig" value="Instagram" required>
+                    <label class="form-check-label d-flex align-items-center mb-0 ms-2 w-100" for="contact_ig">
+                        <i class="fab fa-instagram fs-4 me-3 text-danger"></i> Instagram
+                    </label>
+                </div>
+                <div class="mora-radio-wrapper form-check d-flex align-items-center">
+                    <input class="form-check-input flex-shrink-0" type="radio" name="contact_method" id="contact_line" value="LINE" required>
+                    <label class="form-check-label d-flex align-items-center mb-0 ms-2 w-100" for="contact_line">
+                        <i class="fab fa-line fs-4 me-3" style="color:#06C755;"></i> LINE
+                    </label>
+                </div>
+                
+                <!-- 帳號輸入框(動態出現) -->
+                <div class="mt-4" id="contactIdWrapper" style="display: none;">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="contact_id" name="contact_id" placeholder="ID" required>
+                        <label for="contact_id">請輸入您的帳號 ID</label>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="d-grid mt-5 pt-3">
+                <button type="submit" class="btn btn-submit">🔥 Start Matching</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactRadios = document.querySelectorAll('input[name="contact_method"]');
+        const contactIdWrapper = document.getElementById('contactIdWrapper');
+        const contactIdInput = document.getElementById('contact_id');
+        
+        contactRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                contactIdWrapper.style.display = 'block';
+                // Using Bootstrap floating label, so we don't necessarily need to change placeholder manually anymore.
+            });
+        });
+        
+        // Add checked state styling to custom checkboxes
+        const checkboxes = document.querySelectorAll('input[name="interests"]');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if(this.checked) {
+                    this.closest('.mora-checkbox-wrapper').classList.add('checked-state');
+                } else {
+                    this.closest('.mora-checkbox-wrapper').classList.remove('checked-state');
+                }
+            });
+        });
+
+        // Ensure at least one interest is checked
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            let checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+            if (!checkedOne) {
+                alert('請至少選擇一項興趣愛好！');
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 {% endblock %}

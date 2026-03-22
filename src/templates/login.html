@@ -1,36 +1,156 @@
 {% extends "base.html" %}
 
-{% block title %}管理員登入{% endblock %}
+{% block title %}管理員登入 - AnonChatAI{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm" data-aos="fade-up">
-                <div class="card-body p-4">
-                    <h3 class="text-center mb-4">管理員登入</h3>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endwith %}
-                    <form method="POST" action="{{ url_for('login') }}">
-                        <div class="mb-3">
-                            <label for="password" class="form-label">密碼</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">登入</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<style>
+    .login-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8fafc;
+        padding: 2rem 1.5rem;
+    }
+    .login-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        padding: 3rem 2.5rem;
+        width: 100%;
+        max-width: 440px;
+    }
+    .login-icon {
+        width: 64px;
+        height: 64px;
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.15);
+    }
+    .login-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        text-align: center;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.5rem;
+    }
+    .login-subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 1.05rem;
+        margin-bottom: 2.5rem;
+    }
+    .mora-input-group {
+        margin-bottom: 1.5rem;
+    }
+    .mora-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        display: block;
+    }
+    .mora-input {
+        width: 100%;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 14px;
+        padding: 14px 18px;
+        color: #0f172a;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .mora-input:focus {
+        background-color: #ffffff;
+        border-color: #0f172a;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+    }
+    .mora-input::placeholder {
+        color: #94a3b8;
+    }
+    .mora-btn {
+        width: 100%;
+        background: #0f172a;
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        padding: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .mora-btn:hover {
+        background: #1e293b;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+    }
+    .mora-alert {
+        border-radius: 14px;
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 2.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+    }
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+</style>
+
+<div class="login-section">
+    <div class="login-card" data-aos="fade-up">
+        <div class="login-icon">
+            <i class="fas fa-shield-alt"></i>
         </div>
+        <h3 class="login-title">管理員登入</h3>
+        <p class="login-subtitle">請輸入您的管理員帳號與密碼</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show mora-alert" role="alert">
+            <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2 fs-5"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="mora-input-group">
+                <label for="username" class="mora-label">帳號</label>
+                <input type="text" class="mora-input" id="username" name="username" placeholder="請輸入管理員帳號" required>
+            </div>
+            <div class="mora-input-group">
+                <label for="password" class="mora-label">密碼</label>
+                <input type="password" class="mora-input" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="mora-btn">
+                登入系統 <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

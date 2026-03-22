@@ -1,28 +1,292 @@
 {% extends "base.html" %}
 
-{% block title %}提交成功{% endblock %}
+{% block title %}配對中...{% endblock %}
 
 {% block content %}
-<div class="container text-center my-5 py-5">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .match-card {
+        border-radius: 20px;
+        border: 1px solid #eaeaea;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 3rem 2rem;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* Loading State Styles */
+    .loading-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .mora-spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #1a1a1a;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .loading-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    .progress-track {
+        width: 100%;
+        max-width: 400px;
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .progress-bar-animated {
+        width: 30%;
+        height: 100%;
+        background-color: #1a1a1a;
+        border-radius: 4px;
+        animation: loadingBar 2s ease-in-out infinite alternate;
+    }
+    @keyframes loadingBar { 0% { transform: translateX(-50%); } 100% { transform: translateX(250%); } }
+    .loading-desc {
+        color: #adb5bd;
+        font-size: 0.95rem;
+        max-width: 300px;
+    }
+
+    /* Success State Styles */
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    .success-icon i {
+        color: white;
+        font-size: 2.5rem;
+    }
+    .success-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+    .match-info-box {
+        background-color: #f0fdf4;
+        border-radius: 12px;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 450px;
+        margin-bottom: 2rem;
+    }
+    .match-info-text {
+        color: #166534;
+        font-size: 1.05rem;
+        font-weight: 500;
+        margin-bottom: 0.8rem;
+    }
+    .partner-found {
+        color: #15803d;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .section-title {
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1rem;
+    }
+    .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    .interest-tag {
+        background-color: #f1f5f9;
+        color: #334155;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    .personality-text {
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    .countdown-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    .btn-start-chat {
+        background-color: #0a0a0a;
+        color: white;
+        border-radius: 12px;
+        padding: 14px 0;
+        width: 100%;
+        max-width: 400px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: 0.2s ease;
+    }
+    .btn-start-chat:hover {
+        background-color: #2a2a2a;
+        color: white;
+    }
+</style>
+
+<div class="container my-5 pb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-5">
-                    <i class="fas fa-check-circle fa-4x text-success mb-4" data-aos="zoom-in"></i>
-                    <h1 class="card-title" data-aos="fade-up">提交成功！</h1>
-                    <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">感謝您撥冗填寫個人檔案，我們已經收到您的資料。</p>
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="card match-card" id="match-container">
+                
+                <!-- STATE 1: Loading -->
+                <div id="loading-state" class="text-center w-100 pb-3">
+                    <div class="loading-title justify-content-center">
+                        <div class="mora-spinner"></div> AnonChatAI 配對中
+                    </div>
                     
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4" data-aos="fade-up" data-aos-delay="200">
-                        <a href="{{ url_for('home') }}" class="btn btn-secondary btn-lg px-4">
-                            <i class="fas fa-home me-2"></i>返回首頁
-                        </a>
-                        <a href="{{ url_for('chat_room', user_id=user_id) }}" class="btn btn-primary btn-lg px-4">
-                            <i class="fas fa-comments me-2"></i>開始聊天！
-                        </a>
+                    <div class="loading-subtitle">正在搜尋合適的聊天對象...</div>
+                    
+                    <div class="d-flex justify-content-center">
+                        <div class="progress-track">
+                            <div class="progress-bar-animated"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="loading-desc mx-auto">
+                        我們正在為您尋找興趣相投的聊天夥伴<br>請稍候片刻...
                     </div>
                 </div>
+
+                <!-- STATE 2: Success (Initially Hidden) -->
+                <div id="success-state" class="text-center w-100" style="display: none;">
+                    <div class="d-flex justify-content-center">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    
+                    <h1 class="success-title">配對成功！</h1>
+                    
+                    <div class="d-flex justify-content-center container-fluid">
+                        <div class="match-info-box">
+                            <div class="match-info-text">現場已有與您興趣相仿的顧客，已安排您們進行交流</div>
+                            <div class="partner-found"><i class="fas fa-user-friends"></i> 找到合適的聊天夥伴</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-title">您們的共同興趣：</div>
+                    <div class="tag-container" id="shared-interests-container">
+                        <!-- Tags will be injected here via JS -->
+                    </div>
+                    
+                    <div class="personality-text" id="partner-personality">對方性格：...</div>
+                    
+                    <div class="countdown-text" id="countdown-text">5秒後自動進入聊天室，或點擊下方按鈕立即開始</div>
+                    
+                    <a href="{{ url_for('chat_room', user_id=user_id) }}" class="btn btn-start-chat text-decoration-none">立即開始交流</a>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userId = "{{ user_id }}";
+    const loadingState = document.getElementById('loading-state');
+    const successState = document.getElementById('success-state');
+    const sharedInterestsContainer = document.getElementById('shared-interests-container');
+    const partnerPersonalityEl = document.getElementById('partner-personality');
+    const countdownText = document.getElementById('countdown-text');
+    
+    let pollInterval;
+    let countdownInterval;
+
+    function startPolling() {
+        pollInterval = setInterval(checkMatchStatus, 2000); // Check every 2 seconds
+    }
+
+    function checkMatchStatus() {
+        fetch(`/api/try_match/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.matched) {
+                    clearInterval(pollInterval);
+                    showSuccessState(data);
+                } else if (data.error) {
+                    clearInterval(pollInterval);
+                    alert("發生錯誤：" + data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Polling error:", error);
+            });
+    }
+
+    function showSuccessState(data) {
+        // Hide loading, show success
+        loadingState.style.display = 'none';
+        successState.style.display = 'block';
+        
+        // Populate interests
+        sharedInterestsContainer.innerHTML = '';
+        if (data.shared_interests && data.shared_interests.length > 0) {
+            data.shared_interests.forEach(interest => {
+                const span = document.createElement('span');
+                span.className = 'interest-tag';
+                span.textContent = interest;
+                sharedInterestsContainer.appendChild(span);
+            });
+        }
+        
+        // Populate personality
+        if (data.partner_personality) {
+            partnerPersonalityEl.textContent = '對方性格：' + data.partner_personality;
+        }
+
+        // Start countdown
+        let secondsLeft = 5;
+        countdownInterval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = `/chat/${userId}`;
+            } else {
+                countdownText.textContent = `${secondsLeft}秒後自動進入聊天室，或點擊下方按鈕立即開始`;
+            }
+        }, 1000);
+    }
+
+    // Start polling immediately when the page loads
+    startPolling();
+});
+</script>
 {% endblock %}
